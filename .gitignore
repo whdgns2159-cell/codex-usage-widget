@@ -1,0 +1,8 @@
+work/
+outputs/
+*.log
+*.tmp
+*.user
+*.suo
+.vs/
+dist/*
