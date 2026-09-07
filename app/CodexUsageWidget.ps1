@@ -66,7 +66,11 @@ function Find-CodexCommand {
     $fullPath = $binary.FullName
     $drive = $fullPath.Substring(0, 1).ToLowerInvariant()
     $rest = $fullPath.Substring(2).Replace("\", "/")
-    return [pscustomobject]@{ Mode = "wsl"; Path = "/mnt/$drive$rest" }
+    $profilePath = $env:USERPROFILE
+    $profileDrive = $profilePath.Substring(0, 1).ToLowerInvariant()
+    $profileRest = $profilePath.Substring(2).Replace("\", "/")
+    $codexHome = "/mnt/$profileDrive$profileRest/.codex"
+    return [pscustomobject]@{ Mode = "wsl"; Path = "/mnt/$drive$rest"; CodexHome = $codexHome }
 }
 
 function Send-ServerMessage([hashtable]$Message) {
@@ -259,9 +263,12 @@ function Start-CodexServer {
 
         $psi.FileName = Join-Path $env:SystemRoot "System32\wsl.exe"
         $sqliteHome = "$wslHome/.codex/sqlite"
-        $psi.Arguments = "--exec /usr/bin/env `"CODEX_SQLITE_HOME=$sqliteHome`" `"$($codexCommand.Path)`" app-server --stdio"
+        $psi.Arguments = "--exec /usr/bin/env `"CODEX_HOME=$($codexCommand.CodexHome)`" `"CODEX_SQLITE_HOME=$sqliteHome`" `"$($codexCommand.Path)`" app-server --stdio"
         }
         $psi.UseShellExecute = $false
+        if ($codexCommand.Mode -eq "native") {
+            $psi.EnvironmentVariables["CODEX_HOME"] = Join-Path $env:USERPROFILE ".codex"
+        }
         $psi.CreateNoWindow = $true
         $psi.RedirectStandardInput = $true
         $psi.RedirectStandardOutput = $true
@@ -282,7 +289,7 @@ function Start-CodexServer {
             id = $initId
             method = "initialize"
             params = @{
-                clientInfo = @{ name = "codex-usage-widget"; title = "Codex Usage Widget"; version = "1.0.0" }
+                clientInfo = @{ name = "codex-usage-widget"; title = "Codex Usage Widget"; version = "1.0.1" }
                 capabilities = @{ experimentalApi = $true }
             }
         }

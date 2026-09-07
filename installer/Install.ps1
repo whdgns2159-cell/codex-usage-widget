@@ -1,4 +1,7 @@
-param([switch]$Quiet)
+param(
+    [switch]$Quiet,
+    [string]$Version = "1.0.1"
+)
 
 $ErrorActionPreference = "Stop"
 $productName = "Codex Usage Widget"
@@ -39,7 +42,7 @@ foreach ($shortcutPath in $shortcutTargets) {
 $uninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\CodexUsageWidget"
 New-Item -Path $uninstallKey -Force | Out-Null
 New-ItemProperty -Path $uninstallKey -Name "DisplayName" -Value $productName -PropertyType String -Force | Out-Null
-New-ItemProperty -Path $uninstallKey -Name "DisplayVersion" -Value "1.0.0" -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name "DisplayVersion" -Value $Version -PropertyType String -Force | Out-Null
 New-ItemProperty -Path $uninstallKey -Name "Publisher" -Value "Codex Usage Widget contributors" -PropertyType String -Force | Out-Null
 New-ItemProperty -Path $uninstallKey -Name "InstallLocation" -Value $installDir -PropertyType String -Force | Out-Null
 $uninstallCommand = 'wscript.exe "' + (Join-Path $installDir "Uninstall-CodexUsageWidget.vbs") + '"'

@@ -1,4 +1,4 @@
-param([string]$Version = "1.0.0")
+param([string]$Version = "1.0.1")
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
@@ -21,7 +21,7 @@ Copy-Item -LiteralPath (Join-Path $PSScriptRoot "Uninstall-CodexUsageWidget.vbs"
 Copy-Item -LiteralPath (Join-Path $repoRoot "README.md") -Destination $payloadDir
 Copy-Item -LiteralPath (Join-Path $repoRoot "LICENSE") -Destination $payloadDir
 
-$installCmd = "@echo off`r`npowershell.exe -NoProfile -ExecutionPolicy Bypass -STA -File `"%~dp0Install.ps1`" %*`r`n"
+$installCmd = "@echo off`r`npowershell.exe -NoProfile -ExecutionPolicy Bypass -STA -File `"%~dp0Install.ps1`" -Version `"$Version`" %*`r`n"
 [System.IO.File]::WriteAllText((Join-Path $payloadDir "install.cmd"), $installCmd, [System.Text.Encoding]::ASCII)
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot "Install.ps1") -Destination $payloadDir
 
